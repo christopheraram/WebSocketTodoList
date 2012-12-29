@@ -3,7 +3,6 @@
     <title>guest&#39;s Firebase Project</title>
     <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
     <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
-    <script type='text/javascript' src='todo.js'></script>
    
   <style>
   
@@ -110,9 +109,8 @@
         taskData.on('child_added', function(snapshot) {
           var data=snapshot.val();
           printList (data.taskName, data.description, data.priority, data.completed);
-          al
           
-          alert (snapshot.ref());
+          //alert (snapshot.ref());
         
         });
                
