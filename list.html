@@ -1,0 +1,136 @@
+<html>
+  <head>
+    <title>guest&#39;s Firebase Project</title>
+    <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+    <script type='text/javascript' src='todo.js'></script>
+   
+  <style>
+  
+    body { font-family:sans-serif; max-width:960px; margin:auto;  }
+    input { padding:5px; border:2px solid #333; }
+    select { padding: 4px; border:2px solid #333; }
+    
+    * { transition:all 1s; -webkit-transition:all 1s;}
+    
+    #wrap { padding:5%; }
+    
+    #dateDue { width: 170px; }
+    #description { width: 250px; }
+    
+    #createTask { float:right; background:#27AAE1; color:#FFF; padding-left:10px; padding-right:10px }
+    
+    #title { width: 100%; padding: 1px 2% 1px 2%; background: #27AAE1; position:relative; border-radius: 15px 15px 0 0; margin:auto; }
+    #title h3 { color:#FFF; }
+    #title p { float: right; position: absolute; top: 7px; right: 20px; }
+    
+    #control-wrap { width:100%; background:#333; padding: 1% 2% 1% 2%; margin:auto; }
+    #controls { background:#333;   margin:auto;  }
+    
+    #list { background:#333; width:100%; padding:0 2% 1% 2%; }
+    .item {    background:#FFF; width:100%; border-top:1px solid #777; border-bottom:1px solid #777; }
+    .items { display:inline-block; padding:5px 10px 5px 10px; width:196px; overflow:hidden; text-align:center; vertical-align:middle; }
+  
+  </style>
+  
+      
+  </head>
+  <body>
+    <div id='wrap'>
+		<div id="title">
+			<h3>When is Due!?</h3>
+			<p> the <strong>other</strong> todo list </p>
+		</div>
+        <div id="control-wrap">
+            <div id="controls">
+                    
+              <input type='text' id='taskName' placeholder='Task Name' required="required">
+                      <input type='text' id='description' placeholder='Description'>
+                          
+              <select id="priority" required="required">
+                          <option value="">Select Priority</option>
+                          <option value="high">High Priority</option>
+                          <option value="med">Medium Priority</option>
+                          <option value="low">Low Priority</option>
+                      </select>
+                          
+              <input type='submit' id='createTask' placeholder='Create' value="Create">
+		      	</div>
+      
+      </div>
+      
+      <div id="list"> </div>
+      
+    </div>
+    
+  </body>
+  
+  <script type="text/javascript">
+  
+        var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
+        var errorColor = '2px solid #D82330';
+        var id = null;
+        var description = null;
+        var completed = false;
+                
+            
+        $('#createTask').on("click", function() {
+            
+          var description  = $('#description').val();
+          
+            if ($('#taskName').val() !== '') { 
+        		var taskName = $('#taskName').val();
+        		noError("#taskName");
+        	}
+        	else { error("#taskName"); }
+        	
+        	if ($('#priority').val() !== "") {
+        		var priority = $('#priority').val();
+        		noError("#priority");
+        	}
+        	else { error("#priority"); }
+        	
+        	if ( ($('#taskName').val() !== '') || ($('#priority').val() !== '') ) {
+        		taskData.push({taskName: taskName, description: description, priority: priority, completed: completed});
+        		reset ();
+        	}
+        	else { return; }
+        		
+        });
+          
+          
+        function printList ( taskName, description, priority, completed ) {
+          var htmlDiv = "<div class='items'>";
+          
+          var task = "<input type='text' id='taskName' placeholder='Task Name' value='"+ taskName +"'></input>";
+          
+          $('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + description + '</div>'+ htmlDiv + priority + '</div>' + htmlDiv + completed + '</div>' ).appendTo('#list');
+        }
+               
+        taskData.on('child_added', function(snapshot) {
+          var data=snapshot.val();
+          printList (data.taskName, data.description, data.priority, data.completed);
+          al
+          
+          alert (snapshot.ref());
+        
+        });
+               
+        function noError(id) {
+            $(id).css('border', '');
+        }
+         
+        function error(id) {
+            $(id).css('border', errorColor );
+        }
+        
+        function reset () {
+            $('#priority, #taskName, #description').val('');
+        }
+              
+          
+  
+  </script>
+    
+</html>
+  
