@@ -18,6 +18,7 @@
     #description { width: 250px; }
     
     #createTask { float:right; background:#27AAE1; color:#FFF; padding-left:10px; padding-right:10px }
+    #editTask { padding:5px; border:0px solid #333; }
     
     #title { width: 100%; padding: 1px 2% 1px 2%; background: #27AAE1; position:relative; border-radius: 15px 15px 0 0; margin:auto; }
     #title h3 { color:#FFF; }
@@ -37,7 +38,7 @@
   <body>
     <div id='wrap'>
 		<div id="title">
-			<h3>When is Due!?</h3>
+			<h3>When is Due?!</h3>
 			<p> the <strong>other</strong> todo list </p>
 		</div>
         <div id="control-wrap">
@@ -98,17 +99,17 @@
         });
           
           
-        function printList ( taskName, description, priority, completed ) {
+        function printList ( taskName, description, priority, completed, reference ) {
           var htmlDiv = "<div class='items'>";
           
-          var task = "<input type='text' id='taskName' placeholder='Task Name' value='"+ taskName +"'></input>";
+          var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ taskName +"'></input>";
           
-          $('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + description + '</div>'+ htmlDiv + priority + '</div>' + htmlDiv + completed + '</div>' ).appendTo('#list');
+          $('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + description + '</div>'+ htmlDiv + priority + '</div>' + htmlDiv + completed + '</div>'  + reference ).appendTo('#list');
         }
                
         taskData.on('child_added', function(snapshot) {
           var data=snapshot.val();
-          printList (data.taskName, data.description, data.priority, data.completed);
+          printList (data.taskName, data.description, data.priority, data.completed, snapshot.ref());
           
           //alert (snapshot.ref());
         
