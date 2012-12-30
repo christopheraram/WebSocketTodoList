@@ -66,94 +66,100 @@
   </body>
   
   <script type="text/javascript">
-		// Get Firebase Reference
-        var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
+  
+var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
         
-		//Misc Declarations 
-		var errorColor = '2px solid #D82330';
-        var id = null;
-		var i = 0;
+	//Misc Declarations 
+	var errorColor = '2px solid #D82330';
+	var items = [];
 		
-		var items = new Array();
-		
-		function Item() {
-			var taskName = null;
-			var descritipn = null;
-			var priority = null;
-			var completed = null;
-			var reference = null;
-		}
+	function Item() {
+			this.taskName = null;
+			this.descritipn = null;
+			this.priority = null;
+			this.completed = null;
+			this.reference = null;
+			
+
+	}
                 
-        $('#createTask').on("click", function() {
+	$('#createTask').on("click", function() {
+	
 		
-			
-            var temp = new item();
-			
-			temp.description  = $('#description').val();
-			temp.completed = false;
-
-			if ($('#taskName').val() !== '') { 
-				temp.taskName = $('#taskName').val();
-				noError("#taskName");
-			}
-			else { error("#taskName"); }
-
-			if ($('#priority').val() !== "") {
-				temp.priority = $('#priority').val();
-				noError("#priority");
-			}
-			else { error("#priority"); }
-
-			if ( ($('#taskName').val() !== '') || ($('#priority').val() !== '') ) {
-				taskData.push({taskName: temp.taskName, description: temp.description, priority: temp.priority, completed: temp.completed});
-				reset ();
-			}
-			else { return; }
-
-        		
-        });
-          
-          
-        function printList ( Item ) {
-			var htmlDiv = "<div class='items'>";
-
-			var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ item.taskName +"'></input>";
-
-			$('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + item.description + '</div>'+ htmlDiv + item.priority + '</div>' + htmlDiv + item.completed + '</div>'  + item.reference ).appendTo('#list');
-        }
-               
-        taskData.on('child_added', function(snapshot) {
-			var data=snapshot.val();
+		var tempItem = new Item();
 		
-			var temp = new item();
-			
-			temp.taskName = data.taskName;
-			temp.description = data.description;
-			temp.priority = data.priority;
-			temp.completed = data.completed;
-			temp.reference = snapshot.ref();
-			
-			items.push(temp);
-			
-			printList (items);
-			
-			i++;
-			
-        });
-               
-        function noError(id) {
-            $(id).css('border', '');
-        }
-         
-        function error(id) {
-            $(id).css('border', errorColor );
-        }
-        
-        function reset () {
-            $('#priority, #taskName, #description').val('');
-        }
-              
-          
+		tempItem.description  = $('#description').val();
+		tempItem.completed = false;
+
+		if ($('#taskName').val() !== '') { 
+			tempItem.taskName = $('#taskName').val();
+			noError("#taskName");
+		}
+		else { error("#taskName"); }
+
+		if ($('#priority').val() !== "") {
+			tempItem.priority = $('#priority').val();
+			noError("#priority");
+		}
+		else { error("#priority"); }
+
+		if ( ($('#taskName').val() !== '') || ($('#priority').val() !== '') ) {
+			taskData.push({taskName: tempItem.taskName, description: tempItem.description, priority: tempItem.priority, completed: tempItem.completed});
+			reset ();
+		}
+		else { return; }
+	});
+	
+	function printList ( item ) {
+		var htmlDiv = "<div class='items'>";
+
+		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ item.taskName +"'></input>";
+
+		$('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + item.description + '</div>'+ htmlDiv + item.priority + '</div>' + htmlDiv + item.completed + '</div>'  + item.reference ).appendTo('#list');
+	}
+
+	taskData.on('child_added', function(snapshot) {
+		var data=snapshot.val();
+	
+		var item = new Item();
+		
+		item.taskName = data.taskName;
+		item.description = data.description;
+		item.priority = data.priority;
+		item.completed = data.completed;
+		item.reference = snapshot.ref();
+		
+		items.push(item);
+		
+		item.printItem();
+	});
+
+	Item.prototype.printItem = function() {
+	
+		var htmlDiv = "<div class='items'>";
+
+		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ this.taskName +"'></input>";
+		var checkbox = "<input type='checkbox' name='completed'>Completed";
+		$('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + this.description + '</div>'+ htmlDiv + this.priority + '</div>' + htmlDiv + this.completed + '</div>'  + checkbox ).appendTo('#list');
+	
+	};
+	
+	
+
+	
+	//Make JQuery Extension
+	function noError(id) {
+		$(id).css('border', '');
+	}
+	 
+	function error(id) {
+		$(id).css('border', errorColor );
+	}
+	
+	function reset () {
+		$('#priority, #taskName, #description').val('');
+	}
+  
   
   </script>
     

@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <title>guest&#39;s Firebase Project</title>
+    <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+    <link rel='stylesheet' type='text/css' href='https://www.firebase.com/css/example.css'>
+  </head>
+  <body>
+    <div id='messagesDiv'></div>
+    <input type='text' id='nameInput' placeholder='Name'>
+    <input type='text' id='messageInput' placeholder='Message'>
+    <script type='text/javascript'>
+      var myDataRef = new Firebase('https://guest148483207.firebaseio-demo.com/');
+      $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var name = $('#nameInput').val();
+          var text = $('#messageInput').val();
+          myDataRef.push({name: name, text: text});
+          $('#messageInput').val('');
+        }
+      });
+      function printChatMessage(name, text) {
+        $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+      myDataRef.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+        printChatMessage(message.name, message.text);
+      });
+    </script>
+  </body>
+</html>
+
+
+snapshot.ref()
+will return a reference to the object for editting
+var listItem = snapshot.ref()
+listItem.update({title: "new"})
+somethign like that
+snapshot.name() will return just the id
+are you still working in plunker?
+
+
+
+function Item(snapshot) {
+  this.ref = snapshot.ref();
+  this.val = snapshot.val();
+  this.append();
+  this.attachListener();
+}
+ 
+Item.prototype.append = function()
+{
+  $('#Item-container').append('<li>'+this.val.title+' '+this.val.description+'</li>');
+  this.$element = $('#Item-container').find('li').last(); //the element that was added the line before
+};
+ 
+Item.prototype.attachListener = function()
+{
+  var item = this;
+  item.$element.find('input[type="checkbox"]').on('change', function(){
+    item.ref.update({finished: true});
+  });
+  item.ref.on('child_removed', function() {
+    item.$element.remove();
+    delete item;
+  });
+};
+
+function addError() { 
+	this.each(function() { 
+	$(this).css('border', '');
+});
