@@ -37,7 +37,7 @@
   </head>
   <body>
     <div id='wrap'>
-		<div id="title">
+  	<div id="title">
 			<h3>When is Due?!</h3>
 			<p> the <strong>other</strong> todo list </p>
 		</div>
@@ -68,7 +68,7 @@
   <script type="text/javascript">
 
   
-	var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
+	var taskData = new Firebase('https://ca-todo-list.firebaseio.com/tasks');
         
 	//Misc Declarations 
 	var errorColor = '2px solid #D82330';
@@ -117,22 +117,19 @@
 	}
 
 	taskData.on('child_added', function(snapshot) {
-		
-		var data=snapshot.val();
+	
 		var item = new Item();
 		
-		item.taskName = data.taskName;
-		item.description = data.description;
-		item.priority = data.priority;
-		item.completed = data.completed;
+		item.taskName = snapshot.val().taskName;
+		item.description = snapshot.val().description;
+		item.priority = snapshot.val().priority;
+		item.completed =snapshot.val().completed;
 		item.reference = snapshot.ref();
 
 		item.printItem();
 		item.attachListeners();
 	
 	});
-	
-	
 
 	Item.prototype.printItem = function() {
 	
@@ -167,11 +164,14 @@
 		
 		//
 		item.reference.on('value', function(snapshot) {
-			
-			console.log(snapshot.val());
-			//item.e
-			//alert(item.taskName + " Has Changed");
 		
+			if ( (snapshot.val().completed == true ) ) {
+				item.element.find('input[type="checkbox"]').prop('checked',true);
+			}
+			else {
+				item.element.find('input[type="checkbox"]').prop('checked',false);
+			}
+			
 		});
 	
 	};
