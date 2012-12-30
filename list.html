@@ -125,15 +125,17 @@
         taskData.on('child_added', function(snapshot) {
 			var data=snapshot.val();
 		
-			items[i] = new Item();
+			var temp = new item();
 			
-			items[i].taskName = data.taskName;
-			items[i].description = data.description;
-			items[i].priority = data.priority;
-			items[i].completed = data.completed;
-			items[i].reference = snapshot.ref();
+			temp.taskName = data.taskName;
+			temp.description = data.description;
+			temp.priority = data.priority;
+			temp.completed = data.completed;
+			temp.reference = snapshot.ref();
 			
-			printList (items[i]);
+			items.push(temp);
+			
+			printList (items);
 			
 			i++;
 			
