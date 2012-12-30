@@ -66,41 +66,57 @@
   </body>
   
   <script type="text/javascript">
-  
+		// Get Firebase Reference
         var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
-        var errorColor = '2px solid #D82330';
+        
+		//Misc Declarations 
+		var errorColor = '2px solid #D82330';
         var id = null;
-        var description = null;
-        var completed = false;
+		var i = 0;
+		
+		var items = new Array();
+		
+		function item() {
+			var taskName = null;
+			var descritipn = null;
+			var priority = null;
+			var completed = null;
+			var reference = null;
+		}
                 
-            
         $('#createTask').on("click", function() {
-            
-          var description  = $('#description').val();
-          
-            if ($('#taskName').val() !== '') { 
-        		var taskName = $('#taskName').val();
-        		noError("#taskName");
-        	}
-        	else { error("#taskName"); }
-        	
-        	if ($('#priority').val() !== "") {
-        		var priority = $('#priority').val();
-        		noError("#priority");
-        	}
-        	else { error("#priority"); }
-        	
-        	if ( ($('#taskName').val() !== '') || ($('#priority').val() !== '') ) {
-        		taskData.push({taskName: taskName, description: description, priority: priority, completed: completed});
-        		reset ();
-        	}
-        	else { return; }
+		
+			
+            var temp = new item();
+			
+			temp.description  = $('#description').val();
+			temp.completed = false;
+
+			if ($('#taskName').val() !== '') { 
+				temp.taskName = $('#taskName').val();
+				noError("#taskName");
+			}
+			else { error("#taskName"); }
+
+			if ($('#priority').val() !== "") {
+				temp.priority = $('#priority').val();
+				noError("#priority");
+			}
+			else { error("#priority"); }
+
+			if ( ($('#taskName').val() !== '') || ($('#priority').val() !== '') ) {
+				taskData.push({taskName: temp.taskName, description: temp.description, priority: temp.priority, completed: temp.completed});
+				reset ();
+			}
+			else { return; }
+
         		
         });
           
           
         function printList ( taskName, description, priority, completed, reference ) {
-          var htmlDiv = "<div class='items'>";
+
+		  var htmlDiv = "<div class='items'>";
           
           var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ taskName +"'></input>";
           
@@ -108,11 +124,20 @@
         }
                
         taskData.on('child_added', function(snapshot) {
-          var data=snapshot.val();
-          printList (data.taskName, data.description, data.priority, data.completed, snapshot.ref());
-          
-          //alert (snapshot.ref());
-        
+			var data=snapshot.val();
+		
+			items[i] = new item();
+			
+			items[i].taskName = data.taskName;
+			items[i].description = data.description;
+			items[i].priority = data.priority;
+			items[i].completed = data.completed;
+			items[i].reference = snapshot.ref();
+			
+			printList (items[i].taskName, items[i].description, items[i].priority, items[i].completed, items[i].reference);
+			
+			i++;
+			
         });
                
         function noError(id) {
