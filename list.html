@@ -68,7 +68,7 @@
   <script type="text/javascript">
 
   
-var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
+	var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
         
 	//Misc Declarations 
 	var errorColor = '2px solid #D82330';
@@ -80,13 +80,10 @@ var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
 			this.completed = false;
 			this.reference = null;
 			this.element = null;
-			
-			
 	}
                 
 	$('#createTask').on("click", function() {
 	
-		
 		var tempItem = new Item();
 		
 		tempItem.description  = $('#description').val();
@@ -131,40 +128,50 @@ var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
 		item.reference = snapshot.ref();
 
 		item.printItem();
-		item.attachListener();
+		item.attachListeners();
 	
 	});
 	
-	taskData.on('value', function(snapshot) {
-		console.log(snapshot.val());
-	});
+	
 
 	Item.prototype.printItem = function() {
 	
 		var htmlDiv = "<div class='items'>";
 		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ this.taskName +"'></input>";
-		var checkbox = "<input type='checkbox' " + (this.completed ? 'checked' : "") + "/>" + this.completed ? true : false;
+		var checkbox = "<input type='checkbox' " + (this.completed ? 'checked' : "") + "/>";
 		
 		$('#list').append( '<div class="item">'+ htmlDiv + task + '</div>' + htmlDiv + this.description + '</div>'+ htmlDiv + this.priority + '</div>' + htmlDiv + checkbox + '</div>');
-		console.log(this);
-		this.element = $('#list').find('div').last();
+		this.element = $('#list').children().last();
 	};
 	
-	Item.prototype.attachListener = function() {
+	Item.prototype.attachListeners = function() {
 		
 		var item = this;
-		console.log(item);
 		
-		//alert(item.reference);
-		//alert(item.element);
-		
+		//Detect a Change in Checkbox Status
 		item.element.find('input[type="checkbox"]').on('change', function() {
-			item.reference.update({completed: true});
+			var checkbox = item.element.find('input[type="checkbox"]');
+			if ( (checkbox.is(':checked') ) ) {
+				item.reference.update({completed: true});
+			}
+			else {
+				item.reference.update({completed: false});
+			}
 		});
 
+		//Remove an Item
 		item.reference.on('child_removed', function() {
 			item.element.remove();
 			delete item;
+		});
+		
+		//
+		item.reference.on('value', function(snapshot) {
+			
+			console.log(snapshot.val());
+			//item.e
+			//alert(item.taskName + " Has Changed");
+		
 		});
 	
 	};
