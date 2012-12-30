@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>guest&#39;s Firebase Project</title>
+    <title>When is Due?!</title>
     <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
     <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
    
@@ -26,9 +26,12 @@
     
     #control-wrap { width:100%; background:#333; padding: 1% 2% 1% 2%; margin:auto; }
     #controls { background:#333;   margin:auto;  }
+  
+	  #list-header { background-color:#555; width:100%; }
+    .header-item { color:#FFF; display:inline-block; width:196px; text-align:center; padding:5px 10px 5px 10px; }
     
-    #list { background:#333; width:100%; padding:0 2% 1% 2%; }
-    .item {    background:#FFF; width:100%; border-top:1px solid #777; border-bottom:1px solid #777; }
+    #list { background:#333; width:100%; padding:1% 2% 1% 2%; }
+    .item {    background:#FFF; width:100%; border-bottom:1px solid #777; }
     .items { display:inline-block; padding:5px 10px 5px 10px; width:196px; overflow:hidden; text-align:center; vertical-align:middle; }
   
   </style>
@@ -42,22 +45,24 @@
 			<p> the <strong>other</strong> todo list </p>
 		</div>
         <div id="control-wrap">
+			
             <div id="controls">
-                    
-              <input type='text' id='taskName' placeholder='Task Name' required="required">
-                      <input type='text' id='description' placeholder='Description'>
-                          
-              <select id="priority" required="required">
-                          <option value="">Select Priority</option>
-                          <option value="high">High Priority</option>
-                          <option value="med">Medium Priority</option>
-                          <option value="low">Low Priority</option>
-                      </select>
-                          
-              <input type='submit' id='createTask' placeholder='Create' value="Create">
-		      	</div>
+				<input type='text' id='taskName' placeholder='Task Name' required="required">
+				<input type='text' id='description' placeholder='Description'>
+						  
+				<select id="priority" required="required">
+						  <option value="">Select Priority</option>
+						  <option value="high">High Priority</option>
+						  <option value="med">Medium Priority</option>
+						  <option value="low">Low Priority</option>
+					  </select>
+					  
+				<input type='submit' id='createTask' placeholder='Create' value="Create">
+			</div>
       
       </div>
+	  
+	 
       
       <div id="list"> </div>
       
@@ -162,21 +167,15 @@
 			delete item;
 		});
 		
-		//
+		//On Change of Value change Checkbox State
 		item.reference.on('value', function(snapshot) {
-		
-			if ( (snapshot.val().completed == true ) ) {
-				item.element.find('input[type="checkbox"]').prop('checked',true);
-			}
-			else {
-				item.element.find('input[type="checkbox"]').prop('checked',false);
-			}
-			
+
+			item.element.find('input[type="checkbox"]').prop('checked',snapshot.val().completed);
+
 		});
 	
 	};
 
-	
 	//Make JQuery Extension
 	function noError(id) {
 		$(id).css('border', '');
