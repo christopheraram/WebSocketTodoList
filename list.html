@@ -66,21 +66,22 @@
   </body>
   
   <script type="text/javascript">
+
   
 var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
         
 	//Misc Declarations 
 	var errorColor = '2px solid #D82330';
-	var items = [];
 		
 	function Item() {
 			this.taskName = null;
 			this.descritipn = null;
 			this.priority = null;
-			this.completed = null;
+			this.completed = false;
 			this.reference = null;
+			this.element = null;
 			
-
+			
 	}
                 
 	$('#createTask').on("click", function() {
@@ -119,8 +120,8 @@ var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
 	}
 
 	taskData.on('child_added', function(snapshot) {
+		
 		var data=snapshot.val();
-	
 		var item = new Item();
 		
 		item.taskName = data.taskName;
@@ -128,23 +129,45 @@ var taskData = new Firebase('https://guest148483207.firebaseio-demo.com/tasks');
 		item.priority = data.priority;
 		item.completed = data.completed;
 		item.reference = snapshot.ref();
-		
-		items.push(item);
-		
+
 		item.printItem();
+		item.attachListener();
+	
+	});
+	
+	taskData.on('value', function(snapshot) {
+		console.log(snapshot.val());
 	});
 
 	Item.prototype.printItem = function() {
 	
 		var htmlDiv = "<div class='items'>";
-
 		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ this.taskName +"'></input>";
-		var checkbox = "<input type='checkbox' name='completed'>Completed";
-		$('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + this.description + '</div>'+ htmlDiv + this.priority + '</div>' + htmlDiv + this.completed + '</div>'  + checkbox ).appendTo('#list');
-	
+		var checkbox = "<input type='checkbox' " + (this.completed ? 'checked' : "") + "/>" + this.completed ? true : false;
+		
+		$('#list').append( '<div class="item">'+ htmlDiv + task + '</div>' + htmlDiv + this.description + '</div>'+ htmlDiv + this.priority + '</div>' + htmlDiv + checkbox + '</div>');
+		console.log(this);
+		this.element = $('#list').find('div').last();
 	};
 	
+	Item.prototype.attachListener = function() {
+		
+		var item = this;
+		console.log(item);
+		
+		//alert(item.reference);
+		//alert(item.element);
+		
+		item.element.find('input[type="checkbox"]').on('change', function() {
+			item.reference.update({completed: true});
+		});
+
+		item.reference.on('child_removed', function() {
+			item.element.remove();
+			delete item;
+		});
 	
+	};
 
 	
 	//Make JQuery Extension
