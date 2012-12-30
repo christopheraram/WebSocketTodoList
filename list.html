@@ -76,7 +76,7 @@
 		
 		var items = new Array();
 		
-		function item() {
+		function Item() {
 			var taskName = null;
 			var descritipn = null;
 			var priority = null;
@@ -114,19 +114,18 @@
         });
           
           
-        function printList ( taskName, description, priority, completed, reference ) {
+        function printList ( Item ) {
+			var htmlDiv = "<div class='items'>";
 
-		  var htmlDiv = "<div class='items'>";
-          
-          var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ taskName +"'></input>";
-          
-          $('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + description + '</div>'+ htmlDiv + priority + '</div>' + htmlDiv + completed + '</div>'  + reference ).appendTo('#list');
+			var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ item.taskName +"'></input>";
+
+			$('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + item.description + '</div>'+ htmlDiv + item.priority + '</div>' + htmlDiv + item.completed + '</div>'  + item.reference ).appendTo('#list');
         }
                
         taskData.on('child_added', function(snapshot) {
 			var data=snapshot.val();
 		
-			items[i] = new item();
+			items[i] = new Item();
 			
 			items[i].taskName = data.taskName;
 			items[i].description = data.description;
@@ -134,7 +133,7 @@
 			items[i].completed = data.completed;
 			items[i].reference = snapshot.ref();
 			
-			printList (items[i].taskName, items[i].description, items[i].priority, items[i].completed, items[i].reference);
+			printList (items[i]);
 			
 			i++;
 			
