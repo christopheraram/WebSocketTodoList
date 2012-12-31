@@ -100,3 +100,54 @@ Item.prototype.attachListeners = function() {
   });
 
 };
+
+$(document).ready(function () {
+   
+       //Create a new Task
+    $('#createTask').on("click", function() {
+  
+      var tempItem = new Item();
+      
+      tempItem.description  = $('#description').val();
+      tempItem.completed = false;
+    
+      if ($('#taskName').val() !== '') { 
+        tempItem.taskName = $('#taskName').val();
+         $("#taskName").removeError();
+      }
+      else { $("#taskName").addError(); }
+    
+      if ($('#priority').val() !== '') {
+        tempItem.priority = $('#priority').val();
+        $("#priority").removeError();
+      }
+      else { $("#priority").addError(); }
+    
+      //Don't Allow user to Submit Emtpy Lists
+      if ( ($('#taskName').val() !== '') && ($('#priority').val() !== '') ) {
+        taskData.push({taskName: tempItem.taskName, description: tempItem.description, priority: tempItem.priority, completed: tempItem.completed});
+        reset (); // Reset the Form
+      }
+    
+    });
+    
+    //jQuery Extensions
+    $.fn.addError = function() { 
+      this.each(function() { 
+        $(this).css('border', '2px solid #D82330');
+      });
+    };
+
+    $.fn.removeError = function() {  
+      this.each(function() { 
+        $(this).css('border', '');
+      });
+    };
+    
+    
+    //Resets on Submit
+    function reset () {
+      $('#priority, #taskName, #description').val('');
+    }
+   
+});
