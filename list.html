@@ -3,209 +3,84 @@
     <title>When is Due?!</title>
     <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
     <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+    <script type='text/javascript' src='list.js'></script>
    
-  <style>
-  
-    body { font-family:sans-serif; max-width:960px; margin:auto;  }
-    input { padding:5px; border:2px solid #333; vertical-align:middle; }
-    select { padding: 4px; border:2px solid #333; }
-    
-    * { transition:all 1s; -webkit-transition:all 1s;}
-    
-    #wrap { padding:5%; }
-    
-    #dateDue { width: 170px; }
-    #description { width: 250px; }
-    
-    #createTask { float:right; background:#27AAE1; color:#FFF; padding-left:10px; padding-right:10px }
-    #editTask { padding:5px; border:0px solid #333; }
-    
-    #title { width: 100%; padding: 1px 2% 1px 2%; background: #27AAE1; position:relative; border-radius: 15px 15px 0 0; margin:auto; }
-    #title h3 { color:#FFF; }
-    #title p { float: right; position: absolute; top: 7px; right: 20px; }
-    
-    #control-wrap { width:100%; background:#333; padding: 1% 2% 1% 2%; margin:auto; }
-    #controls { background:#333;   margin:auto;  }
-  
-    #list-header { background-color:#555; width:100%; }
-    .header-item { color:#FFF; display:inline-block; width:196px; text-align:center; padding:5px 10px 5px 10px; }
-    
-    #list { background:#333; width:100%; padding:1% 2% 1% 2%; }
-    .item {    background:#FFF; width:100%; border-bottom:1px solid #777; font-size:10pt }
-    .items { display:inline-block; padding:5px 10px 5px 10px; width:196px; overflow:hidden; text-align:center; vertical-align:middle; }
-    
-    #removeItem { border:2px solid #FFF; margin:0 15px 0 15px; font-size:8pt; }
-    
-  </style>
-  
-      
+    <link rel='stylesheet' type='text/css' href='style.css'>
   </head>
+  
   <body>
     <div id='wrap'>
-  	<div id="title">
+    <div id="title">
 			<h3>When is Due?!</h3>
 			<p> the <strong>other</strong> todo list </p>
 		</div>
         <div id="control-wrap">
 			
-            <div id="controls">
-				<input type='text' id='taskName' placeholder='Task Name' required="required">
-				<input type='text' id='description' placeholder='Description'>
-						  
-				<select id="priority" required="required">
-						  <option value="">Select Priority</option>
-						  <option value="high">High Priority</option>
-						  <option value="med">Medium Priority</option>
-						  <option value="low">Low Priority</option>
-					  </select>
-					  
-				<input type='submit' id='createTask' placeholder='Create' value="Create">
-			</div>
+          <div id="controls">
+          
+    				<input type='text' id='taskName' placeholder='Task Name' required="required">
+    				<input type='text' id='description' placeholder='Description'>
+    						  
+    				<select id="priority" required="required">
+    						  <option value="">Select Priority</option>
+    						  <option value="high">High Priority</option>
+    						  <option value="med">Medium Priority</option>
+    						  <option value="low">Low Priority</option>
+    			  </select>
+    					  
+    				<input type='submit' id='createTask' placeholder='Create' value="Create">	
+
+  			</div>
       
       </div>
 	  
-	 
+      <div id="list-wrap">
+        
+        
+        <div id="list"></div>
+
+      </div>
       
-      <div id="list"> </div>
+      <div id="footer"></div>
       
     </div>
     
   </body>
   
+  
   <script type="text/javascript">
-
   
-	var taskData = new Firebase('https://ca-todo-list.firebaseio.com/tasks');
-        
-	//Misc Declarations 
-	var errorColor = '2px solid #D82330';
-		
-	function Item() {
-			this.taskName = null;
-			this.descritipn = null;
-			this.priority = null;
-			this.completed = false;
-			this.reference = null;
-			this.element = null;
-	}
+    //Create a new Task
+    $('#createTask').on("click", function() {
   
-  //Create a new Task
-	$('#createTask').on("click", function() {
-	
-		var tempItem = new Item();
-		
-		tempItem.description  = $('#description').val();
-		tempItem.completed = false;
-
-		if ($('#taskName').val() !== '') { 
-			tempItem.taskName = $('#taskName').val();
-			noError("#taskName");
-		}
-		else { error("#taskName"); }
-
-		if ($('#priority').val() !== '') {
-			tempItem.priority = $('#priority').val();
-			noError("#priority");
-		}
-		else { error("#priority"); }
-
-    //Don't Allow a user to Submit Emtpy Lists
-		if ( ($('#taskName').val() !== '') && ($('#priority').val() !== '') ) {
-			taskData.push({taskName: tempItem.taskName, description: tempItem.description, priority: tempItem.priority, completed: tempItem.completed});
-			reset ();
-		}
-
-	});
-
-  //Store Varriables, Print and Attach Listeners
-	taskData.on('child_added', function(snapshot) {
-	
-		var item = new Item();
-		
-		item.taskName = snapshot.val().taskName;
-		item.description = snapshot.val().description;
-		item.priority = snapshot.val().priority;
-		item.completed =snapshot.val().completed;
-		item.reference = snapshot.ref();
-
-		item.printItem();
-		item.attachListeners();
-	
-	});
-
-  //Print Items
-	Item.prototype.printItem = function() {
-	
-		var htmlDiv = "<div class='items'>";
-		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ this.taskName +"'\>";
-		var checkbox = "<input type='checkbox' " + (this.completed ? 'checked' : "") + "/>";
-    var removeItem = "<input type='button' value='Remove' id='removeItem''>";
-		var html = '<div class="item">'+ htmlDiv + task + '</div>' + htmlDiv + this.description + '</div>'+ htmlDiv + this.priority + '</div>' + htmlDiv + checkbox + removeItem +'</div>';
-		
-    if (this.completed) { 
-      $('#list').append(html)
-      this.element = $('#list').children().last();
-    }
-    else {
-      $('#list').prepend( html );
-      this.element = $('#list').children().first();
-    }
-    
-		
-	};
-	
-  
-  //Attach Listeners
-	Item.prototype.attachListeners = function() {
-		
-		var item = this;
-		
-		//Detect a Change in Checkbox Status
-		item.element.find('input[type="checkbox"]').on('change', function() {
-			var checkbox = item.element.find('input[type="checkbox"]');
-
-			//checkbox.is returns a boolean
-			item.reference.update({completed: checkbox.is(':checked') });
-
-
-		});
-    
-    
-    item.element.find('input[type="button"]').on('click',function() {
+      var tempItem = new Item();
       
-      item.reference.remove();
-      
+      tempItem.description  = $('#description').val();
+      tempItem.completed = false;
+    
+      if ($('#taskName').val() !== '') { 
+        tempItem.taskName = $('#taskName').val();
+        noError("#taskName");
+      }
+      else { error("#taskName"); }
+    
+      if ($('#priority').val() !== '') {
+        tempItem.priority = $('#priority').val();
+        noError("#priority");
+      }
+      else { error("#priority"); }
+    
+      //Don't Allow a user to Submit Emtpy Lists
+      if ( ($('#taskName').val() !== '') && ($('#priority').val() !== '') ) {
+        taskData.push({taskName: tempItem.taskName, description: tempItem.description, priority: tempItem.priority, completed: tempItem.completed});
+        reset (); // Reset the Form
+      }
+    
     });
-
-		//Remove an Item
-		item.reference.on('child_removed', function() {
-			item.element.remove();
-			delete item;
-		});
-		
-		//On Change of Value change Checkbox State
-		item.reference.on('value', function(snapshot) {
-
-			item.element.find('input[type="checkbox"]').prop('checked',snapshot.val().completed);
-
-		});
-	
-	};
-
-	//Make JQuery Extension
-	function noError(id) {
-		$(id).css('border', '');
-	}
-	 
-	function error(id) {
-		$(id).css('border', errorColor );
-	}
-	
-	function reset () {
-		$('#priority, #taskName, #description').val('');
-	}
+    
     
   </script>
+
     
 </html>
   
