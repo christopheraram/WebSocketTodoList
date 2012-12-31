@@ -1,8 +1,5 @@
 var taskData = new Firebase('https://ca-todo-list.firebaseio.com/tasks');
  
-//Misc Declarations 
-var errorColor = '2px solid #D82330';
-
 function Item() {
   this.taskName = null;
   this.descritipn = null;
@@ -35,7 +32,7 @@ Item.prototype.printItem = function() {
   var task = "<div class='details task'><p>" + this.taskName + "</p></div>";
   var description = "<div class='details description'><p>" + this.description + "</p></div>";
   var priority = "<div class='details priority'><p>" + this.priority + "</p></div>";
-  var checkbox = "<div class='details checkbox'><p><input type='checkbox' " + (this.completed ? 'checked' : "") + "/></p></div>";
+  var checkbox = "<div class='details checkbox'><p><input title='Complete' type='checkbox' " + (this.completed ? 'checked' : "") + "/></p></div>";
   var removeItem = "<div class='details remove-button'><p><input type='button' value='Remove' id='removeItem'></p></div>";
         
   var html = "<div class='item'>" + task + description + priority + checkbox + removeItem + "<div class='strikeout'></div></div>";
@@ -77,11 +74,12 @@ Item.prototype.attachListeners = function() {
     
       item.completed = snapshot.val().completed;
     
-      //item.element.find('input[type="checkbox"]').prop('checked',snapshot.val().completed);
       item.element.remove();
       item.printItem();
       item.attachListeners();
     }
+    
+     //item.element.find('input[type="checkbox"]').prop('checked',snapshot.val().completed);
   
   });
   
@@ -102,16 +100,3 @@ Item.prototype.attachListeners = function() {
   });
 
 };
-
-  //Make JQuery Extension
-  function noError(id) {
-    $(id).css('border', '');
-  }
-
-  function error(id) {
-    $(id).css('border', errorColor );
-  }
-  
-  function reset () {
-    $('#priority, #taskName, #description').val('');
-  }

@@ -26,19 +26,14 @@
     						  <option value="high">High Priority</option>
     						  <option value="med">Medium Priority</option>
     						  <option value="low">Low Priority</option>
-    			  </select>
+  			    </select>
     					  
     				<input type='submit' id='createTask' placeholder='Create' value="Create">	
-
   			</div>
-      
       </div>
 	  
-      <div id="list-wrap">
-        
-        
+      <div id="list-wrap">    
         <div id="list"></div>
-
       </div>
       
       <div id="footer"></div>
@@ -60,23 +55,42 @@
     
       if ($('#taskName').val() !== '') { 
         tempItem.taskName = $('#taskName').val();
-        noError("#taskName");
+         $("#taskName").removeError();
       }
-      else { error("#taskName"); }
+      else { $("#taskName").addError(); }
     
       if ($('#priority').val() !== '') {
         tempItem.priority = $('#priority').val();
-        noError("#priority");
+        $("#priority").removeError();
       }
-      else { error("#priority"); }
+      else { $("#priority").addError(); }
     
-      //Don't Allow a user to Submit Emtpy Lists
+      //Don't Allow user to Submit Emtpy Lists
       if ( ($('#taskName').val() !== '') && ($('#priority').val() !== '') ) {
         taskData.push({taskName: tempItem.taskName, description: tempItem.description, priority: tempItem.priority, completed: tempItem.completed});
         reset (); // Reset the Form
       }
     
     });
+    
+    //jQuery Extensions
+    $.fn.addError = function() { 
+      this.each(function() { 
+        $(this).css('border', '2px solid #D82330');
+      });
+    }
+
+    $.fn.removeError = function() {  
+      this.each(function() { 
+        $(this).css('border', '');
+      });
+    }
+    
+    
+    //Resets on Submit
+    function reset () {
+      $('#priority, #taskName, #description').val('');
+    }
     
     
   </script>
