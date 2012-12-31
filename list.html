@@ -7,7 +7,7 @@
   <style>
   
     body { font-family:sans-serif; max-width:960px; margin:auto;  }
-    input { padding:5px; border:2px solid #333; }
+    input { padding:5px; border:2px solid #333; vertical-align:middle; }
     select { padding: 4px; border:2px solid #333; }
     
     * { transition:all 1s; -webkit-transition:all 1s;}
@@ -27,13 +27,15 @@
     #control-wrap { width:100%; background:#333; padding: 1% 2% 1% 2%; margin:auto; }
     #controls { background:#333;   margin:auto;  }
   
-	  #list-header { background-color:#555; width:100%; }
+    #list-header { background-color:#555; width:100%; }
     .header-item { color:#FFF; display:inline-block; width:196px; text-align:center; padding:5px 10px 5px 10px; }
     
     #list { background:#333; width:100%; padding:1% 2% 1% 2%; }
-    .item {    background:#FFF; width:100%; border-bottom:1px solid #777; }
+    .item {    background:#FFF; width:100%; border-bottom:1px solid #777; font-size:10pt }
     .items { display:inline-block; padding:5px 10px 5px 10px; width:196px; overflow:hidden; text-align:center; vertical-align:middle; }
-  
+    
+    #removeItem { border:2px solid #FFF; margin:0 15px 0 15px; font-size:8pt; }
+    
   </style>
   
       
@@ -86,7 +88,8 @@
 			this.reference = null;
 			this.element = null;
 	}
-                
+  
+  //Create a new Task
 	$('#createTask').on("click", function() {
 	
 		var tempItem = new Item();
@@ -100,27 +103,21 @@
 		}
 		else { error("#taskName"); }
 
-		if ($('#priority').val() !== "") {
+		if ($('#priority').val() !== '') {
 			tempItem.priority = $('#priority').val();
 			noError("#priority");
 		}
 		else { error("#priority"); }
 
-		if ( ($('#taskName').val() !== '') || ($('#priority').val() !== '') ) {
+    //Don't Allow a user to Submit Emtpy Lists
+		if ( ($('#taskName').val() !== '') && ($('#priority').val() !== '') ) {
 			taskData.push({taskName: tempItem.taskName, description: tempItem.description, priority: tempItem.priority, completed: tempItem.completed});
 			reset ();
 		}
-		else { return; }
+
 	});
-	
-	function printList ( item ) {
-		var htmlDiv = "<div class='items'>";
 
-		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ item.taskName +"'></input>";
-
-		$('<div class="item">').html( htmlDiv + task + '</div>' + htmlDiv + item.description + '</div>'+ htmlDiv + item.priority + '</div>' + htmlDiv + item.completed + '</div>'  + item.reference ).appendTo('#list');
-	}
-
+  //Store Varriables, Print and Attach Listeners
 	taskData.on('child_added', function(snapshot) {
 	
 		var item = new Item();
@@ -136,16 +133,29 @@
 	
 	});
 
+  //Print Items
 	Item.prototype.printItem = function() {
 	
 		var htmlDiv = "<div class='items'>";
-		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ this.taskName +"'></input>";
+		var task = "<input type='text' id='editTask' placeholder='Task Name' value='"+ this.taskName +"'\>";
 		var checkbox = "<input type='checkbox' " + (this.completed ? 'checked' : "") + "/>";
+    var removeItem = "<input type='button' value='Remove' id='removeItem''>";
+		var html = '<div class="item">'+ htmlDiv + task + '</div>' + htmlDiv + this.description + '</div>'+ htmlDiv + this.priority + '</div>' + htmlDiv + checkbox + removeItem +'</div>';
 		
-		$('#list').append( '<div class="item">'+ htmlDiv + task + '</div>' + htmlDiv + this.description + '</div>'+ htmlDiv + this.priority + '</div>' + htmlDiv + checkbox + '</div>');
-		this.element = $('#list').children().last();
+    if (this.completed) { 
+      $('#list').append(html)
+      this.element = $('#list').children().last();
+    }
+    else {
+      $('#list').prepend( html );
+      this.element = $('#list').children().first();
+    }
+    
+		
 	};
 	
+  
+  //Attach Listeners
 	Item.prototype.attachListeners = function() {
 		
 		var item = this;
@@ -153,13 +163,19 @@
 		//Detect a Change in Checkbox Status
 		item.element.find('input[type="checkbox"]').on('change', function() {
 			var checkbox = item.element.find('input[type="checkbox"]');
-			if ( (checkbox.is(':checked') ) ) {
-				item.reference.update({completed: true});
-			}
-			else {
-				item.reference.update({completed: false});
-			}
+
+			//checkbox.is returns a boolean
+			item.reference.update({completed: checkbox.is(':checked') });
+
+
 		});
+    
+    
+    item.element.find('input[type="button"]').on('click',function() {
+      
+      item.reference.remove();
+      
+    });
 
 		//Remove an Item
 		item.reference.on('child_removed', function() {
@@ -188,8 +204,7 @@
 	function reset () {
 		$('#priority, #taskName, #description').val('');
 	}
-  
-  
+    
   </script>
     
 </html>
