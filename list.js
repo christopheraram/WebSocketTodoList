@@ -38,14 +38,14 @@ Item.prototype.printItem = function() {
   var html = "<div class='item'>" + task + description + priority + checkbox + removeItem + "<div class='strikeout'></div></div>";
         
   if (this.completed) { 
-    $('#list').append(html);
-    this.element = $('#list').children().last();
+    $('#complete').append(html);
+    this.element = $('#complete').children().last();
     this.element.css('opacity', '.4');
     //this.element.find('.strikeout').css('display', 'block');
   }
   else {
-    $('#list').prepend(html);
-    this.element = $('#list').children().first();
+    $('#incomplete').prepend(html);
+    this.element = $('#incomplete').children().first();
   }
 
 };
